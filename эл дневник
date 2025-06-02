@@ -1,0 +1,180 @@
+import random
+
+# Исходные данные
+students = ["Иванов", "Петров", "Сидоров"]
+classes = ["Математика", "Русский", "Физика"]
+
+
+# Функция для генерации случайных оценок
+def generate_random_grades(num_grades=5):
+    return [random.randint(2, 5) for _ in range(num_grades)]
+
+
+# Создание структуры данных (дневника)
+diary = {student: {subject: generate_random_grades() for subject in classes} for student in students}
+
+
+# Функции для работы с дневником
+def add_grade(student, subject, grade):
+    if student in diary and subject in diary[student]:
+        diary[student][subject].append(grade)
+    else:
+        print("Ошибка: Ученик или предмет не найден.")
+
+
+def delete_grade(student, subject, grade_index):
+    if student in diary and subject in diary[student]:
+        try:
+            del diary[student][subject][grade_index]
+        except IndexError:
+            print("Ошибка: Неверный индекс оценки.")
+    else:
+        print("Ошибка: Ученик или предмет не найден.")
+
+
+def edit_grade(student, subject, grade_index, new_grade):
+    if student in diary and subject in diary[student]:
+        try:
+            diary[student][subject][grade_index] = new_grade
+        except IndexError:
+            print("Ошибка: Неверный индекс оценки.")
+    else:
+        print("Ошибка: Ученик или предмет не найден.")
+
+
+def get_average_grade(student):
+    if student in diary:
+        total_sum = 0
+        total_count = 0
+        for subject in diary[student]:
+            total_sum += sum(diary[student][subject])
+            total_count += len(diary[student][subject])
+        if total_count > 0:
+            return total_sum / total_count
+        else:
+            return 0
+    else:
+        print("Ошибка: Ученик не найден.")
+        return None
+
+
+def add_student(student):
+    if student not in diary:
+        diary[student] = {subject: [] for subject in classes}
+        students.append(student)
+    else:
+        print("Ошибка: Такой ученик уже есть.")
+
+
+def delete_student(student):
+    if student in diary:
+        del diary[student]
+        students.remove(student)
+    else:
+        print("Ошибка: Ученик не найден.")
+
+
+def edit_student(old_student, new_student):
+    if old_student in diary:
+        diary[new_student] = diary.pop(old_student)
+        students[students.index(old_student)] = new_student  # update list too
+    else:
+        print("Ошибка: Ученик не найден.")
+
+
+def add_subject(subject):
+    if subject not in classes:
+        for student in diary:
+            diary[student][subject] = []
+        classes.append(subject)
+    else:
+        print("Ошибка: Такой предмет уже есть.")
+
+
+def delete_subject(subject):
+    if subject in classes:
+        for student in diary:
+            del diary[student][subject]
+        classes.remove(subject)
+    else:
+        print("Ошибка: Предмет не найден.")
+
+
+def edit_subject(old_subject, new_subject):
+    if old_subject in classes:
+        for student in diary:
+            diary[student][new_subject] = diary[student].pop(old_subject)
+        classes[classes.index(old_subject)] = new_subject
+    else:
+        print("Ошибка: Предмет не найден.")
+
+# Основной цикл программы
+while True:
+    print("\nВыберите действие:")
+    print("1. Добавить оценку")
+    print("2. Удалить оценку")
+    print("3. Редактировать оценку")
+    print("4. Вывести средний балл ученика")
+    print("5. Добавить ученика")
+    print("6. Удалить ученика")
+    print("7. Редактировать ученика")
+    print("8. Добавить предмет")
+    print("9. Удалить предмет")
+    print("10. Редактировать предмет")
+    print("11. Вывести все оценки")
+    print("0. Выход")
+
+    choice = input("Введите номер действия: ")
+
+    if choice == "1":
+        student = input("Введите фамилию ученика: ")
+        subject = input("Введите название предмета: ")
+        grade = int(input("Введите оценку: "))
+        add_grade(student, subject, grade)
+    elif choice == "2":
+        student = input("Введите фамилию ученика: ")
+        subject = input("Введите название предмета: ")
+        grade_index = int(input("Введите индекс оценки для удаления: "))
+        delete_grade(student, subject, grade_index)
+    elif choice == "3":
+        student = input("Введите фамилию ученика: ")
+        subject = input("Введите название предмета: ")
+        grade_index = int(input("Введите индекс оценки для редактирования: "))
+        new_grade = int(input("Введите новую оценку: "))
+        edit_grade(student, subject, grade_index, new_grade)
+    elif choice == "4":
+        student = input("Введите фамилию ученика: ")
+        average_grade = get_average_grade(student)
+        if average_grade is not None:
+            print(f"Средний балл ученика {student}: {average_grade:.2f}")
+    elif choice == "5":
+        student = input("Введите фамилию нового ученика: ")
+        add_student(student)
+    elif choice == "6":
+        student = input("Введите фамилию ученика для удаления: ")
+        delete_student(student)
+    elif choice == "7":
+        old_student = input("Введите фамилию ученика для редактирования: ")
+        new_student = input("Введите новую фамилию ученика: ")
+        edit_student(old_student, new_student)
+    elif choice == "8":
+        subject = input("Введите название нового предмета: ")
+        add_subject(subject)
+    elif choice == "9":
+        subject = input("Введите название предмета для удаления: ")
+        delete_subject(subject)
+    elif choice == "10":
+        old_subject = input("Введите название предмета для редактирования: ")
+        new_subject = input("Введите новое название предмета: ")
+        edit_subject(old_subject, new_subject)
+    elif choice == "11":
+        print ("\n---ДНЕВНИК---")
+        for student, subjects in diary.items():
+            print(f"\nУченик: {student}")
+            for subject, grades in subjects.items():
+                print(f"  {subject}: {grades}")
+        print ("---КОНЕЦ ДНЕВНИКА---")
+    elif choice == "0":
+        break
+    else:
+        print("Неверный ввод. Попробуйте еще раз.")
