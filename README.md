@@ -1,5 +1,5 @@
 # Description
-there are my easy practicing codes : 
+There are my easy practicing codes: 
 
 games and easy apps
 
